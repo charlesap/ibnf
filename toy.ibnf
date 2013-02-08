@@ -1,0 +1,30 @@
+
+    syntax  =  program end ;
+    program =  lines ;
+    lines   = .seq .s '\n' .lines ; 
+    seq     = .s stmt .more ;
+    more    = .s ';' seq ;
+
+
+    stmt    ?  lsprint | vsprint | vdef | exit ;
+    lsprint   = 'p' 'r' 'i' 'n' 't' .s lstring ;
+    vsprint   = 'p' 'r' 'i' 'n' 't' .s vname ;
+    vdef     = 'v' 'a' 'r' s vname .s '=' .s varable ;
+    vname   / lwr .vname ;
+    exit    = 'e' 'x' 'i' 't' .s exitvalue ;
+
+
+    lstring = '\"' .strchs '\"' ;
+    strchs  = strch .strchs ;
+    strch   ? dgt | upr | lwr | smb | ' ' | '\t' | nsl | ntk | nqt | nnl | ntb ;
+    nsl     = bsl ;
+    ntk     = btk ;
+    nqt     = bqt ;
+    nnl     = bnl ;
+    ntb     = btb ;
+    varable   = '\"' .chs '\"' ;
+    exitvalue / pnt ;
+
+
+    end  = .s ;
+

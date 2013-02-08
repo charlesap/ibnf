@@ -1,0 +1,67 @@
+
+ syntax   ^ prologue + .1.1 + semantics + epilogue 
+
+
+ rules   ^ .1.1 + .2.1 
+
+
+ blankline  ^ "" 
+
+
+ altern  |def `.2.1`_p( s, c):
+         |  if been("`.2.1`",s): return was( c, "`.2.1`",s)
+         |  else:
+         |    mark("`.2.1`",s,(F,T,s,0,c,("","")));met = F 
+         |`#.5#` 
+         |    if not met:
+         |      return mark("`.2.1`",s,(F,T,s,0,c,("","")))
+         |    else:
+         |      return mark("`.2.1`",s,(met,mem,s,tl,tc,ta)) 
+ .albody ^ #.1.2#  + #.1.3.1#
+ .cmatch ^ #.1#
+ .cm     |    if not met: (met,mem,ts,tl,tc,ta)=cm('`.1`',s,c)
+ .btb    |    if not met: (met,mem,ts,tl,tc,ta)=cm('`.1`',s,c)
+ .bnl    |    if not met: (met,mem,ts,tl,tc,ta)=cm('`.1`',s,c)
+ .name   |    if not met: (met,mem,ts,tl,tc,ta)=`.1`_p(s,c)
+
+
+ incorp  :smfnc="_s(a,m,s,e,c,n): return(T,T,s,e-s,c,(n,fi[s:e]))"
+         |def `.2.1`_p( s, c):
+         |  if been("`.2.1`",s): return was( c, "`.2.1`",s)
+         |  else:
+         |    mark("`.2.1`",s,(F,T,s,0,c,("",""))) 
+         |    ok=True; ts=s; tl=0; a={0: ("","")}
+         |    mem={0:True}; tc=c; n=0
+         |`#.5#` 
+         |    if ok:
+         |      rv=`.2.1`_s(a,andmemo(mem),s,ts+tl,tc,"`.2.1`")
+         |      return mark("`.2.1`",s,rv)
+         |    return mark("`.2.1`",s,(F,T,s,0,c,("","")))
+         |`("def "+.2.1+smfnc if .4.1 == "/" else "")`
+ .inbody |    if ok:
+         |      n=n+1; ( `(  "n" if .1.2.0 == "pnit" else "" )`ok,mem[n],ts,tl,tc,a[n])=\
+         |      `#.1.2.1 if .1.2.0=="pnit" else .1.2#`
+         |`#.1.3#`
+ .pnit   ^ "n"
+ .cmatch ^ #.1# 
+ .name   ^ .1 +"_p ( (ts+tl), tc)"
+ .cm     ^ "cm(\'" + .1 + "\',(ts+tl), tc)"
+ .bsl    ^ " cm(chr(92) ,(ts+tl), tc)"
+ .btk    ^ " cm(chr(39) ,(ts+tl), tc)"
+ .bqt    ^ " cm(chr(34) ,(ts+tl), tc)"
+ .bnl    ^ " cm(chr(10) ,(ts+tl), tc)"
+
+
+
+ albody  ^ ..
+ almore  ^ .4
+
+
+ inbody ^ .. 
+
+
+ pnit ^ .2 
+
+
+ cmatch ^ .2 
+

@@ -1,0 +1,76 @@
+
+ syntax = srules end ;    
+
+
+ srules = srule .srules ;    
+
+
+ srule ? blankline | base ;
+
+
+ blankline = .s '\n' ;
+
+
+ base   =  .s name .setup body .recr;
+ body   ?  qlineset | cline  ;
+ setup  = .s ':' .s code .s '\n' .setup ;
+ recr   = .s '.' name .rsetup body .recr ;    
+ rsetup = .s ':' .s rcode .s '\n' .rsetup ;
+ rcode  = ritm .rcode ;
+
+
+ ritm ?     string |  rcr | lwr | dpathw | dhas | pnt | '>' | '<' |
+        '{' | '}' | ':' | '%' | '(' | ',' | ')' | '_' | '[' | ']' |
+                    ';' | '+' | '-' | '*' | '/' | '=' | '!' | ' ' ;    
+
+
+
+
+ cline    =  .s '^' .s code .s '\n' ;
+
+
+ qlineset =  qlines ;
+ qlines   =  .s qlsep qline .qlines ;
+ qlsep    =  '|' ;
+ qline    =  qchs '\n' ;
+
+
+ qchs   = .qch .qchs ;
+ qch    ? aln | qq | qt | qs | qsmb | ' ' | qcode  ;
+ qq     = '\"' ;
+ qt     = '\'' ;
+ qs     = '\\' ;
+
+
+ qcode = '`' .s code .s '`' ;
+
+
+ name / lwr .name ;    
+
+
+ qsmb   ? '-'|'_'|'+'|'='|'~'|'!'|'@'|'#'|'$'|'%'|'^'|'&'|'!'|'|'|'/'|
+            ':'|';'|'*'|'('|')'|'['|']'|'{'|'}'|','|'.'|'<'|'>'|'?' ; 
+
+
+ string  =  '\"' .strcs '\"' ;
+ strcs   =  sch .strcs ;
+
+
+ code = citm .code ;
+ citm ? string | cnl | rcr | lwr | dpathw | dhas | pnt | '>' | '<' |
+         '{' | '}' | ':' | '%' | '(' | ',' | ')' | '_' | '[' | ']' |
+                     ';' | '+' | '-' | '*' | '/' | '=' | '!' | ' ' ;    
+ cnl = '\n' .s '^' ;
+
+ dpathw   =    dpath ;
+ dpath    =    '.' pnt .dpath ;
+ dhas     =    '.' '.' ;
+
+
+ rcr   ?    rca | rcb ;
+ rca   =    '#' .s name .s ':' .s code .s '#' ;
+ rcb   =    '#' .s code .s '#' ;
+
+
+ end   =  .s  ;
+

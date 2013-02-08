@@ -1,0 +1,40 @@
+
+ syntax = rules ;    
+
+
+ rules = rule .rules ;    
+
+
+ rule ? incorp | altern | blankline ;
+
+
+ blankline = .s '\n' ;
+
+
+ altern =  .s name .s '?' albody  .s ';' .s '\n'  ;
+
+
+ incorp =  .s name .s iflag inbody  .s ';' .s '\n'  ;
+ iflag  ? '/' | '=' ;
+
+
+ name / lwr .name ; 
+
+
+ albody = .s nit .almore ;  
+ almore = .s '|' .alnewline albody ;
+ alnewline / .s '\n' ;  
+
+
+ inbody = .s onit .inbody ;  
+ onit ? pnit | nit ;
+
+
+ pnit = '.' nit ;  
+
+
+ nit ? name | cmatch ;
+
+
+ cmatch = '\'' sch '\'' ;
+

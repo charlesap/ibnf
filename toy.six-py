@@ -1,0 +1,143 @@
+
+    syntax ^ header + code + literals
+
+   program : # sizecode   : .1.1 #
+           : # countvars  : .1.1 #
+           : # makelit    : .1.1 #
+           : # emitcode   : .1.1 #
+           : print .1.1
+           | ok
+
+    lines  ^ ( "seq", .1.1 , .4.1 )
+    seq    ^ ( "seq", .2.1 , .3.1 )
+    more   ^ .3.1
+
+
+    lsprint  ^ ( "lsprint", .7.1 )
+    vsprint  ^ ( "vsprint", .7.1 )
+    vdef    ^ ( "vdef", .5.1, .9.1 )
+    exit   ^ ( "exit",  .6.1 )
+
+
+    strchs  ^ .1.1 + .2.1
+    nsl     ^ "\\"
+    ntk     ^ "\'"
+    nqt     ^ "\""
+    nnl     ^ "\n"
+    ntb     ^ "\t"
+    lstring  ^ ( "lstring", .2.1, str(s), str(len(.2.1)) )
+    varable    ^ ( "lstring", .2.1, str(s), str(len(.2.1)) )
+
+
+  sizecode : global lstart
+           : lstart = int(# .. #)+232+4096+8
+           | ok
+   .seq    ^ str(0 + int(n2z(#.1#)) + int(n2z(#.2#)))
+   .exit   ^ str(len(unhexlify(# exitx : 0 # )))
+   .lsprint  ^ str(len(unhexlify( # lsprintx : (0,0) # )))
+   .vdef   ^ str(len(unhexlify( # vdefx : (0,0,0) # )))
+   .vsprint ^ str(len(unhexlify( # vsprintx : 0 # )))
+
+
+
+    makelit : global literals, llist, lend; llist = {}; lend = 0
+            : literals = # .. #
+            | ok
+   .seq     ^ #.1# + #.2#
+   .exit    ^ "" 
+   .lsprint   ^ #.1#
+   .lstring  : global llist, lend; llist[.2] = lend; lend = lend + len(.1)
+            ^ .1
+   .vdef    ^ #.2#
+
+
+  countvars : global vlist, vend; vlist = {}; vend = 0
+            : literals = # .. #
+            | ok
+   .seq     ^ #.1# + #.2#
+   .vdef    : global vlist, vend; vlist[.1] = vend; vend = vend + 1
+            | ok
+
+
+  emitcode  : global lstart, code, vend
+            : code = unhexlify(# mkloclx : vend #) + # .. #
+            | ok
+   .seq     : global lstart, llist
+            ^  #.1# + #.2#
+   .exit    ^ unhexlify(# exitx : int(.1) # )
+   .lsprint ^ unhexlify( # lsprintx : ( int(.1.3),lstart+llist[.1.2]) # )
+   .vdef    ^ unhexlify( # vdefx : (lstart+llist[.2.2],vlist[.1],int(.2.3)) # )
+   .vsprint ^ unhexlify( # vsprintx : vlist[.1] # )
+
+
+
+   mkloclx  ^ # decsp   : .. * 8  # +
+            ^ # esptoebp: .. # 
+
+
+   exitx    ^ # oneeax  : .. # + 
+            ^ # pushc   : ..  # +
+            ^ # decsp   : 4  # +
+            ^ # int     : 128  # 
+
+
+   lsprintx ^ # pushc   : .0  # +
+            ^ # pushc   : .1  # +
+            ^ # pushc   : 1  # +
+            ^ # toeax   : 4  # +
+            ^ # decsp   : 4  # +
+            ^ # int     : 128  # +
+            ^ # incsp   : 16  # 
+
+
+   vdefx    ^ # toeax   : .0 # +
+            ^ # ebpeax  :  .1 * 8 # +
+            ^ # toeax   :  .2   # +
+            ^ # ebpeax  : ( .1 * 8 ) + 4 # 
+
+
+
+   vsprintx ^ # eaxebp  : ( .. *8)+4 # +
+            ^ # pusheax : .. # +
+            ^ # eaxebp  : ( .. *8) # +
+            ^ # pusheax : .. # +
+            ^ # pushc   : 1  # +
+            ^ # toeax   : 4  # +
+            ^ # decsp   : 4  # +
+            ^ # int     : 128  # +
+            ^ # incsp   : 16  # 
+
+
+   oneeax   ^ "31c040" 
+   esptoebp ^ "89e5" 
+   incsp    ^ "81c4" + be2le("%08X" % (..))
+   decsp    ^ "81ec" + be2le("%08X" % (..))
+   toeax    ^ "b8"   + be2le("%08X" % (..))
+   eaxebp   ^ "8b45" + "%02X" % (..)
+   ebpeax   ^ "8945" + "%02X" % (..)
+   pushc    ^ "68"   + be2le("%08X" % (..))
+   pusheax  ^ "50"
+   int      ^ "cd"   + "%02X" % (..)
+
+
+
+  end   : global header, code, literals
+        : hdr =       unhexlify("cefaedfe07000000030000000200000002000000CC000000")
+        : c1  =       unhexlify("00000000010000007c0000005f5f54455854000000000000")
+        : c1  = c1  + unhexlify("00000000001000000010000000000000")
+        : fsz =       unhexlify("00000000")
+        : c2  =       unhexlify("070000000500000001000000000000005f5f7465787400000000")
+        : c2  = c2  + unhexlify("0000000000005f5f5445585400000000000000000000E8100000")
+        : bsz =       unhexlify("00000000")
+        : c3  =       unhexlify("E800000002000000000000000000000000000000")
+        : c3  = c3  + unhexlify("00000000000000000500000050000000")
+        : c3  = c3  + unhexlify("01000000100000000000000000000000")
+        : c3  = c3  + unhexlify("00000000000000000000000000000000")
+        : c3  = c3  + unhexlify("00000000000000000000000000000000")
+        : c3  = c3  + unhexlify("E8100000000000000000000000000000")
+        : c3  = c3  + unhexlify("0000000000000000")
+        : fsz = unhexlify( be2le( "%08X" % (232 + len(code) + len(literals)) ))
+        : bsz = unhexlify( be2le( "%08X" % (len( code ) + len( literals )) ))
+        : header = hdr + c1 + fsz + c2 + bsz + c3 
+        | ok
+

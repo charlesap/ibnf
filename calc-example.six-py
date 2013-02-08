@@ -1,0 +1,28 @@
+
+     syntax  ^ .1.1 + .4.1
+
+
+     line  : registers[ .1.1.1 ] = int( .2.1 ) 
+           |  --> ` .2.1 `
+
+
+     nexpr   ^ (str(0 - int(.3.1)) if(len(.2) > 1 and .2.1 == "-") else .3.1 )
+
+
+     var     ^ .2  
+
+
+     addexpr ^ str(int(.2.1) + int(.6.1)) 
+     subexpr ^ str(int(.2.1) - int(.6.1)) 
+     mulexpr ^ str(int(.2.1) * int(.6.1)) 
+     divexpr ^ str(int(.2.1) / int(.6.1)) 
+
+
+     itmexpr ^ .2.1  
+
+
+      vbl     ^ str( registers[ .1.1 ] )  
+
+
+     parens ^ .3.1  
+

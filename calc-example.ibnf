@@ -1,0 +1,32 @@
+
+     syntax  = line .s '\n' .syntax ;
+
+
+     line  = .var nexpr ;
+
+
+     nexpr   = .s .neg expr ;
+     neg     ? '-' ;
+
+
+     var     = .s lwr .s '=' ; 
+
+
+     expr    ? addexpr | subexpr | mulexpr | divexpr | itmexpr ;
+
+
+     addexpr = .s itm .s '+' .s itm ;
+     subexpr = .s itm .s '-' .s itm ;
+     mulexpr = .s itm .s '*' .s itm ;
+     divexpr = .s itm .s '/' .s itm ;
+
+
+     itmexpr = .s itm  ;
+     itm     ? vbl | pnt | parens ;
+
+
+      vbl     = lwr ; 
+
+
+     parens  = .s '(' nexpr .s ')' ;
+
